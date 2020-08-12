@@ -3,13 +3,13 @@ import PIL.Image as Image
 
 class Pillcase(object):
 
-    def __init__(self, _url=None, _height=None, _width=None):
-        if not _url:
-            self.width = _width
-            self.height = _height
+    def __init__(self, width=None, height=None, url=None):
+        if not url:
+            self.width = width
+            self.height = height
             self.new(self.width, self.height)
         else:
-            self.load(_url)
+            self.load(url)
 
     def new(self, _width, _height):
         self.image = self.create(_width, _height)
