@@ -83,12 +83,14 @@ class Pillcase(object):
 
     def setStrokeWeight(self, _val):
         self.strokeWeight = _val
+        if (self.strokeWeight <= 0):
+            noStroke()
 
     # https://pillow.readthedocs.io/en/5.1.x/reference/ImageDraw.html#methods
     def polygon(self, _points):
         self.canvas.polygon(_points, fill=self.fill, outline=self.stroke)
         if (self.strokeWeight > 1):
-            self.line(_points)
+            self.polyline(_points)
 
     def getBounds(self, _x, _y, _w, _h):
         _x1 = _x - _w/2
@@ -102,19 +104,31 @@ class Pillcase(object):
         return [ _x1, _y1, _x2, _y1, _x2, _y2, _x1, _y2, _x1, _y1 ]
 
     def ellipse(self, _x, _y, _w, _h):
-        self.canvas.ellipse(self.getBounds(_x, _y, _w, _h), fill=self.fill, outline=self.stroke)
+        if (self.stroke != None and self.strokeWeight > 1):
+            self.canvas.ellipse(self.getBounds(_x, _y, _w, _h), fill=self.fill, outline=None)
+            for i in range(-int(self.strokeWeight), int(self.strokeWeight)):
+                self.canvas.ellipse(self.getBounds(_x, _y, _w + i, _h + i), fill=None, outline=self.stroke)
+        else:
+            self.canvas.ellipse(self.getBounds(_x, _y, _w, _h), fill=self.fill, outline=self.stroke)
+
+
 
     def rect(self, _x, _y, _w, _h):
-        self.canvas.rectangle(self.getBounds(_x, _y, _w, _h), fill=self.fill, outline=self.stroke)
-        if (self.strokeWeight > 1):
-            self.line(self.traceBounds(_x, _y, _w, _h))
+        if (self.stroke != None and self.strokeWeight > 1):
+            self.canvas.rectangle(self.getBounds(_x, _y, _w, _h), fill=self.fill, outline=None)       	
+            self.polyline(self.traceBounds(_x, _y, _w, _h))
+        else:
+            self.canvas.rectangle(self.getBounds(_x, _y, _w, _h), fill=self.fill, outline=self.stroke)       	
 
-    def line(self, _points):
+    def line(self, _x1, _y1, _x2, _y2):
+        self.canvas.line([_x1, _y1, _x2, _y2], fill=self.stroke, width=self.strokeWeight)
+
+    def polyline(self, _points):
         self.canvas.line(_points, fill=self.stroke, width=self.strokeWeight)
 
     def point(self, _x, _y):
         if (self.strokeWeight > 1):
-        	self.canvas.ellipse(self.getBounds(_x, _y, self.strokeWeight, self.strokeWeight), fill=self.stroke, outline=None)
+            self.canvas.ellipse(self.getBounds(_x, _y, self.strokeWeight, self.strokeWeight), fill=self.stroke, outline=None)
         else:
             self.canvas.point([ _x, _y ], fill=self.stroke)
 
