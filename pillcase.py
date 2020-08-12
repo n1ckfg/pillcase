@@ -104,21 +104,10 @@ class Pillcase(object):
         return [ _x1, _y1, _x2, _y1, _x2, _y2, _x1, _y2, _x1, _y1 ]
 
     def ellipse(self, _x, _y, _w, _h):
-        if (self.stroke != None and self.strokeWeight > 1):
-            self.canvas.ellipse(self.getBounds(_x, _y, _w, _h), fill=self.fill, outline=None)
-            for i in range(-int(self.strokeWeight), int(self.strokeWeight)):
-                self.canvas.ellipse(self.getBounds(_x, _y, _w + i, _h + i), fill=None, outline=self.stroke)
-        else:
-            self.canvas.ellipse(self.getBounds(_x, _y, _w, _h), fill=self.fill, outline=self.stroke)
-
-
+        self.canvas.ellipse(self.getBounds(_x, _y, _w, _h), fill=self.fill, outline=self.stroke, width=self.strokeWeight)
 
     def rect(self, _x, _y, _w, _h):
-        if (self.stroke != None and self.strokeWeight > 1):
-            self.canvas.rectangle(self.getBounds(_x, _y, _w, _h), fill=self.fill, outline=None)       	
-            self.polyline(self.traceBounds(_x, _y, _w, _h))
-        else:
-            self.canvas.rectangle(self.getBounds(_x, _y, _w, _h), fill=self.fill, outline=self.stroke)       	
+        self.canvas.rectangle(self.getBounds(_x, _y, _w, _h), fill=self.fill, outline=self.stroke, width=self.strokeWeight)       	
 
     def line(self, _x1, _y1, _x2, _y2):
         self.canvas.line([_x1, _y1, _x2, _y2], fill=self.stroke, width=self.strokeWeight)
