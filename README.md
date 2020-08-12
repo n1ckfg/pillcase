@@ -1,1 +1,1 @@
-![Pillcase](test.jpg)
+![Pillcase](output.png)
