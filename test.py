@@ -2,7 +2,7 @@ from pillcase import *
 import sys
 
 def main():
-    pc = Pillcase(inputDir)
+    pc = Pillcase(url=inputDir)
     
     pc.setFill(0,127,255,127)
     pc.setStroke(255,0,0,127)
