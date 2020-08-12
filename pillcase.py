@@ -30,9 +30,9 @@ class Pillcase(object):
         # https://stackoverflow.com/questions/359706/how-do-you-draw-transparent-polygons-with-python
         self.canvas = ImageDraw.Draw(self.image, "RGBA")
 
-        self.fill = self.setFill((255,255,255))
-        self.stroke = self.setFill((0,0,0))
-        self.strokeWeight = 1
+        self.fill = self.setFill(255)
+        self.stroke = self.setStroke(0)
+        self.strokeWeight = self.setStrokeWeight(1)
         print (str(self.image.format) + " " + str(self.image.size) + " " + str(self.image.mode))
 
     def show(self):
@@ -61,9 +61,11 @@ class Pillcase(object):
 
     def setFill(self, _r, _g=None, _b=None, _a=None):
         self.fill = self.createColor(_r, _g, _b, _a)
+        return self.fill
 
     def setStroke(self, _r, _g=None, _b=None, _a=None):
         self.stroke = self.createColor(_r, _g, _b, _a)
+        return self.stroke
 
     def createColor(self, _r, _g=None, _b=None, _a=None):
         if _g == None and _a == None:
@@ -85,6 +87,7 @@ class Pillcase(object):
         self.strokeWeight = _val
         if (self.strokeWeight <= 0):
             noStroke()
+        return self.strokeWeight
 
     # https://pillow.readthedocs.io/en/5.1.x/reference/ImageDraw.html#methods
     def polygon(self, _points):
