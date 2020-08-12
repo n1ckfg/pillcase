@@ -12,18 +12,24 @@ class Pillcase(object):
             self.load(_url)
 
     def new(self, _width, _height):
-        self.image = Image.new("RGB", (_width, _height))
+        self.image = self.create(_width, _height)
         self.init()
 
     def load(self, _url):
         self.image = Image.open(_url)
         self.init()
 
+    def create(self, _width, _height):
+        return Image.new("RGB", (_width, _height))
+
     def init(self):
-        self.draw = ImageDraw.Draw(self.image)
         self.pixels = self.image.load()
         self.width = self.image.size[0]
         self.height = self.image.size[1]
+
+        # https://stackoverflow.com/questions/359706/how-do-you-draw-transparent-polygons-with-python
+        self.canvas = ImageDraw.Draw(self.image, "RGBA")
+
         self.fill = self.setFill((255,255,255))
         self.stroke = self.setFill((0,0,0))
         self.strokeWeight = 1
@@ -32,8 +38,14 @@ class Pillcase(object):
     def show(self):
         self.image.show()
 
-    def save(self, _url):
-        self.image.save(_url)
+    def blend(self, _image1, _image2, _alpha):
+        return Image.blend(_image1.convert("RGBA"), _image2.convert("RGBA"), alpha=_alpha/255.0)
+
+    def save(self, _url, _alpha=False):
+        if (_alpha == True):
+            self.image.convert("RGBA").save(_url)
+        else:
+            self.image.convert("RGB").save(_url)
 
     def crop(self, _x1, _y1, _x2, _y2):
         box = (_x1, _y1, _x2, _y2)
@@ -42,25 +54,25 @@ class Pillcase(object):
         self.new(_x2-_x1, _y2-_y1)
         self.image.paste(region, box)
 
-    def background(self, _r, _g, _b):
-        color = (_r, _g, _b)
-        points = [ (0, 0), (self.width, 0), (self.width, self.height), (0, self.height), (0, 0) ]
-        self.draw.polygon(points, fill=color, outline=color)
+    def background(self, _r, _g=None, _b=None, _a=None):
+        color = self.createColor(_r, _g, _b, _a)
+        points = [ 0, 0, self.width, self.height ]
+        self.canvas.rectangle(points, fill=color, outline=None)
 
     def setFill(self, _r, _g=None, _b=None, _a=None):
-        self.fill = self.setColor(_r, _g, _b, _a)
+        self.fill = self.createColor(_r, _g, _b, _a)
 
     def setStroke(self, _r, _g=None, _b=None, _a=None):
-        self.stroke = self.setColor(_r, _g, _b, _a)
+        self.stroke = self.createColor(_r, _g, _b, _a)
 
-    def setColor(self, _r, _g=None, _b=None, _a=None):
+    def createColor(self, _r, _g=None, _b=None, _a=None):
         if _g == None and _a == None:
             return (_r, _r, _r, 255)
         elif _g == None and _a != None:
             return (_r, _r, _r, _a)
         elif _g != None and _a == None:
             return (_r, _g, _b, 255)
-        else:
+        elif (_g != None and _a != None):
             return (_r, _g, _b, _a)
 
     def noStroke(self):
@@ -74,18 +86,36 @@ class Pillcase(object):
 
     # https://pillow.readthedocs.io/en/5.1.x/reference/ImageDraw.html#methods
     def polygon(self, _points):
-        self.draw.polygon(_points, fill=self.fill, outline=self.stroke)
+        self.canvas.polygon(_points, fill=self.fill, outline=self.stroke)
+        if (self.strokeWeight > 1):
+            self.line(_points)
 
-    def ellipse(self, _x1, _y1, _x2, _y2):
-        self.draw.ellipse([ _x1, _y1, _x2, _y2 ], fill=self.fill, outline=self.stroke)
+    def getBounds(self, _x, _y, _w, _h):
+        _x1 = _x - _w/2
+        _y1 = _y - _h/2
+        _x2 = _x + _w/2
+        _y2 = _y + _h/2
+        return [ _x1, _y1, _x2, _y2 ]
 
-    def rectangle(self, _x1, _y1, _x2, _y2):
-        self.draw.rectangle([ _x1, _y1, _x2, _y2 ], fill=self.fill, outline=self.stroke)
+    def traceBounds(self, _x, _y, _w, _h):
+        _x1, _y1, _x2, _y2 = self.getBounds(_x, _y, _w, _h)
+        return [ _x1, _y1, _x2, _y1, _x2, _y2, _x1, _y2, _x1, _y1 ]
+
+    def ellipse(self, _x, _y, _w, _h):
+        self.canvas.ellipse(self.getBounds(_x, _y, _w, _h), fill=self.fill, outline=self.stroke)
+
+    def rect(self, _x, _y, _w, _h):
+        self.canvas.rectangle(self.getBounds(_x, _y, _w, _h), fill=self.fill, outline=self.stroke)
+        if (self.strokeWeight > 1):
+            self.line(self.traceBounds(_x, _y, _w, _h))
 
     def line(self, _points):
-        self.draw.line(_points, fill=self.stroke, width=self.strokeWeight)
+        self.canvas.line(_points, fill=self.stroke, width=self.strokeWeight)
 
-    def point(self, _x1, _y1):
-        self.draw.point([ _x1, _y1 ], fill=self.stroke)
+    def point(self, _x, _y):
+        if (self.strokeWeight > 1):
+        	self.canvas.ellipse(self.getBounds(_x, _y, self.strokeWeight, self.strokeWeight), fill=self.stroke, outline=None)
+        else:
+            self.canvas.point([ _x, _y ], fill=self.stroke)
 
 

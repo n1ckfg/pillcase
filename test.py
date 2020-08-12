@@ -4,16 +4,19 @@ import sys
 def main():
     pc = Pillcase(inputDir)
     
+    pc.setFill(0,127,255, 127)
+    pc.setStroke(255,0,0, 127)
+    pc.setStrokeWeight(10)
+
+    pc.background(11, 50, 0, 127)
+
     points = [ 0, 0, 100, 100, 200, 100, 0, 0 ]
-    pc.setFill(0,127,255)
-    pc.setStroke(255,0,0)
     pc.polygon(points)
-    pc.setStrokeWeight(3)
     pc.line([ 0, 0, pc.width, pc.height ])
-    pc.point(110, 0)
+    pc.point(110, 50)
     
     pc.show()
-    pc.save("output.jpg")
+    pc.save("output.png")
   
 argv = sys.argv
 argv = argv[argv.index("--") + 1:] # get all args after "--"
