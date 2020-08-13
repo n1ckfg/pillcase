@@ -10,7 +10,9 @@ class Pillcase(object):
             self.canvas = self.create(_width, _height)
         else:
             self.canvas = self.load(url)
+        self.setup()
 
+    def setup(self):
         self.pixels = self.canvas.load()
         self.width = self.canvas.size[0]
         self.height = self.canvas.size[1]
@@ -28,6 +30,10 @@ class Pillcase(object):
 
     def create(self, _width, _height):
         return Image.new("RGB", (_width, _height))
+
+    def new(self, _width, _height):
+        self.canvas = self.create(_width, _height)
+        self.setup()
 
     def show(self):
         self.canvas.show()
@@ -47,23 +53,23 @@ class Pillcase(object):
         region = self.canvas.crop(box)
         #region = region.transpose(Image.ROTATE_180)
         self.canvas = self.create(_x2-_x1, _y2-_y1)
-        self.canvas.paste(region, box)
+        self.canvas.paste(region, box=box)
 
     def get(self, _x1, _y1, _x2, _y2):
         box = (_x1, _y1, _x2, _y2)
         return self.canvas.crop(box)
 
-    def resize(img, w, h):
+    def resize(self, img, w, h):
         return img.resize((w, h), Image.ANTIALIAS)
 
-    def rotate(img, angle):
+    def rotate(self, img, angle):
     	# https://pythonexamples.org/python-pillow-rotate-image-90-180-270-degrees/
     	return img.rotate(angle, expand=True, resample=3, fillcolor=(0,0,0,0))
 
     def image(self, img, _x1, _y1, _x2=None, _y2=None):
         if (_x2 != None and _y2 != None):
-            img = resize(img, _x2-_x1, _y2-_y1)
-        self.canvas.paste(img, (_x1, _y1, img.size[0], img.size[1]))
+            img = img.resize((_x2-_x1, _y2-_y1), Image.ANTIALIAS)
+        self.canvas.paste(img, (_x1, _y1))
 
     # DRAWING
     def background(self, _r, _g=None, _b=None, _a=None):
@@ -136,3 +142,11 @@ class Pillcase(object):
     def getBorder(self, _x, _y, _w, _h):
         _x1, _y1, _x2, _y2 = self.getBounds(_x, _y, _w, _h)
         return [ _x1, _y1, _x2, _y1, _x2, _y2, _x1, _y2, _x1, _y1 ]
+
+    def constrain(self, _val, _min, _max):
+        if (_val < _min):
+            _val = _min
+        elif (_val > _max):
+            _val = _max
+        return _val
+

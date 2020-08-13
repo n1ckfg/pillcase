@@ -2,8 +2,8 @@ from pillcase import *
 import sys
 
 def main():
-    pc = Pillcase(url=inputDir)
-    
+    pc = Pillcase(url=inputDir)   
+
     pc.setFill(0,127,255,127)
     pc.setStroke(255,0,0,127)
     pc.setStrokeWeight(10)
@@ -20,6 +20,13 @@ def main():
     pc.ellipse(320,340,50,100)
     
     pc.rect(400, 400, 50, 50)
+
+    img = pc.get(0,0,pc.width,pc.height)
+    img = pc.resize(img, 320,240)
+    pc.crop(0,0,640,240)
+    pc.image(img, 0, 0)
+    pc.image(img, 320, 0)
+    pc.image(img, 50, 50, 100, 100)
 
     pc.show()
     pc.save("output.png")
