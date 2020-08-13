@@ -21,7 +21,7 @@ def main():
     
     pc.rect(400, 400, 50, 50)
 
-    img = pc.get(0,0,pc.width,pc.height)
+    img = pc.get(pc.canvas,0,0,pc.width,pc.height)
     img = pc.resize(img, 320,240)
     pc.crop(0,0,640,240)
     pc.image(img, 0, 0)

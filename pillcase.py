@@ -38,38 +38,79 @@ class Pillcase(object):
     def show(self):
         self.canvas.show()
 
-    def save(self, _url, _alpha=False):
+    def save(self, _url="output.png", _alpha=False):
         if (_alpha == True):
             self.canvas.convert("RGBA").save(_url)
         else:
             self.canvas.convert("RGB").save(_url)
 
+    def crop(self, _x1, _y1, _x2, _y2):
+    	img = self.get(self.canvas, _x1, _y1, _x2, _y2)
+    	self.new(_x2-_x1, _y2-_y1)
+    	self.image(img, 0, 0)
+
     # IMAGES
     def blend(self, _image1, _image2, _alpha):
         return Image.blend(_image1.convert("RGBA"), _image2.convert("RGBA"), alpha=_alpha/255.0)
 
-    def crop(self, _x1, _y1, _x2, _y2):
+    def get(self, img, _x1, _y1, _x2, _y2):
         box = (_x1, _y1, _x2, _y2)
-        region = self.canvas.crop(box)
-        #region = region.transpose(Image.ROTATE_180)
-        self.canvas = self.create(_x2-_x1, _y2-_y1)
-        self.canvas.paste(region, box=box)
-
-    def get(self, _x1, _y1, _x2, _y2):
-        box = (_x1, _y1, _x2, _y2)
-        return self.canvas.crop(box)
+        return img.crop(box)
 
     def resize(self, img, w, h):
         return img.resize((w, h), Image.ANTIALIAS)
 
     def rotate(self, img, angle):
-    	# https://pythonexamples.org/python-pillow-rotate-image-90-180-270-degrees/
-    	return img.rotate(angle, expand=True, resample=3, fillcolor=(0,0,0,0))
+        # https://pythonexamples.org/python-pillow-rotate-image-90-180-270-degrees/
+        return img.rotate(angle, expand=True, resample=3, fillcolor=(0,0,0,0))
 
     def image(self, img, _x1, _y1, _x2=None, _y2=None):
         if (_x2 != None and _y2 != None):
             img = img.resize((_x2-_x1, _y2-_y1), Image.ANTIALIAS)
         self.canvas.paste(img, (_x1, _y1))
+
+    '''
+    def squareCrop(img):
+           PGraphics gfx = createGraphics(_img.width, _img.width, P2D);
+        if (_img.width < _img.height) {
+        gfx = createGraphics(_img.height, _img.height, P2D);
+        } else if (_img.width == _img.height) {
+        return _img;
+        }
+        gfx.beginDraw();
+        gfx.background(_bgColor);
+        gfx.imageMode(CENTER);
+        gfx.image(_img, gfx.width/2, gfx.height/2);
+        gfx.endDraw();
+
+        return gfx;
+
+    def colorCrop(img, bgcolor):
+        ArrayList<Integer> allX = new ArrayList<Integer>();
+        ArrayList<Integer> allY = new ArrayList<Integer>();
+        _img.loadPixels();
+
+        for (int y=0; y<_img.height; y++) {
+        for (int x=0; x<_img.width; x++) {
+          int loc = x + y * _img.width;
+          color c = _img.pixels[loc];
+          if (c != _bgColor) {
+            allX.add(x);
+            allY.add(y);
+          }
+        }  
+        }
+
+        Collections.sort(allX);
+        Collections.sort(allY);
+
+        int minX = allX.get(0);
+        int minY = allY.get(0);
+        int maxX = allX.get(allX.size()-1) - minX;
+        int maxY = allY.get(allY.size()-1) - minY;
+
+        return _img.get(minX, minY, maxX, maxY);   
+    '''
 
     # DRAWING
     def background(self, _r, _g=None, _b=None, _a=None):
@@ -149,4 +190,3 @@ class Pillcase(object):
         elif (_val > _max):
             _val = _max
         return _val
-
