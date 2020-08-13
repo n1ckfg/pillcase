@@ -7,7 +7,7 @@ class Pillcase(object):
         if not url:
             self.width = width
             self.height = height
-            self.canvas = self.create(_width, _height)
+            self.canvas = self.create(self.width, self.height)
         else:
             self.canvas = self.load(url)
         self.setup()
