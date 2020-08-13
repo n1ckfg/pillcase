@@ -45,9 +45,9 @@ class Pillcase(object):
             self.canvas.convert("RGB").save(_url)
 
     def crop(self, _x1, _y1, _x2, _y2):
-    	img = self.get(self.canvas, _x1, _y1, _x2, _y2)
-    	self.new(_x2-_x1, _y2-_y1)
-    	self.image(img, 0, 0)
+        img = self.get(self.canvas, _x1, _y1, _x2, _y2)
+        self.new(_x2-_x1, _y2-_y1)
+        self.image(img, 0, 0)
 
     # IMAGES
     def blend(self, _image1, _image2, _alpha):
@@ -69,48 +69,51 @@ class Pillcase(object):
             img = img.resize((_x2-_x1, _y2-_y1), Image.ANTIALIAS)
         self.canvas.paste(img, (_x1, _y1))
 
-    '''
-    def squareCrop(img):
-           PGraphics gfx = createGraphics(_img.width, _img.width, P2D);
-        if (_img.width < _img.height) {
-        gfx = createGraphics(_img.height, _img.height, P2D);
-        } else if (_img.width == _img.height) {
-        return _img;
-        }
-        gfx.beginDraw();
-        gfx.background(_bgColor);
-        gfx.imageMode(CENTER);
-        gfx.image(_img, gfx.width/2, gfx.height/2);
-        gfx.endDraw();
+    def squareCrop(self, img, val=None):
+        x = 0
+        y = 0
+        w = img.size[0]
+        h = img.size[1]
+        if (w > h):
+            x = (w-h)/2
+            w = h
+        elif (w < h):
+            y = (h-w)/2
+            h = w
+        
+        if not val:
+            return self.get(img, x, y, w, h)
+        else:
+            return self.resize(self.get(img, x, y, w, h), val, val)
 
-        return gfx;
+    def colorCrop(self, img, bgcolor):
+        w = img.size[0]
+        h = img.size[1]
+        pixels = img.load()
+        allX = []
+        allY = []
+        bgcolor = self.createColor(bgcolor)
 
-    def colorCrop(img, bgcolor):
-        ArrayList<Integer> allX = new ArrayList<Integer>();
-        ArrayList<Integer> allY = new ArrayList<Integer>();
-        _img.loadPixels();
+        for y in range(0, h):
+            for x in range(0, w):
+                c = self.getPixel(pixels, x, y)
+                if (c != bgcolor):
+                    allX.append(x)
+                    allY.append(y)
 
-        for (int y=0; y<_img.height; y++) {
-        for (int x=0; x<_img.width; x++) {
-          int loc = x + y * _img.width;
-          color c = _img.pixels[loc];
-          if (c != _bgColor) {
-            allX.add(x);
-            allY.add(y);
-          }
-        }  
-        }
+        allX.sort()
+        allY.sort()
 
-        Collections.sort(allX);
-        Collections.sort(allY);
+        minX = allX[0]
+        minY = allY[0]
+        maxX = allX[len(allX)-1] - minX
+        maxY = allY[len(allY)-1] - minY
 
-        int minX = allX.get(0);
-        int minY = allY.get(0);
-        int maxX = allX.get(allX.size()-1) - minX;
-        int maxY = allY.get(allY.size()-1) - minY;
+        return self.get(img, minX, minY, maxX, maxY)   
 
-        return _img.get(minX, minY, maxX, maxY);   
-    '''
+    def getPixel(self, pixels, x, y):
+        r, g, b = pixels[x, y]
+        return self.createColor((r, g, b))
 
     # DRAWING
     def background(self, _r, _g=None, _b=None, _a=None):
