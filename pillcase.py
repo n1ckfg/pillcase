@@ -18,7 +18,10 @@ class Pillcase(object):
         self.height = self.canvas.size[1]
 
         # https://stackoverflow.com/questions/359706/how-do-you-draw-transparent-polygons-with-python
-        self.draw = ImageDraw.Draw(self.canvas, "RGBA")
+        try:
+            self.draw = ImageDraw.Draw(self.canvas, "RGBA")
+        except:
+            print("Source image is not RGBA, drawing will not be possible.")
 
         self.fill = self.setFill(255)
         self.stroke = self.setStroke(0)
