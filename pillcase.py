@@ -1,6 +1,36 @@
 import PIL.ImageDraw as ImageDraw
 import PIL.Image as Image
 
+import argparse
+import glob
+import os
+
+
+class Batcher(object):
+    
+    def __init__(self, filetype1="jpg", filetype2="png"):
+        parser = argparse.ArgumentParser()
+        parser.add_argument("--input_dir", help="path to folder containing images")
+        parser.add_argument("--output_dir", required=True, help="where to put output files")
+        #parser.add_argument("--model", default=None, help="path to model directory")
+        a = parser.parse_args()
+
+        if a.input_dir is None or not os.path.exists(a.input_dir):
+            raise Exception("Input_dir does not exist.")
+
+        self.input_paths = glob.glob(os.path.join(a.input_dir, "*."+filetype1))
+
+        if len(self.input_paths) == 0:
+            self.input_paths = glob.glob(os.path.join(a.input_dir, "*."+filetype2))
+
+        if len(self.input_paths) == 0:
+            raise Exception("Input_dir contains no image files.")
+
+        self.output_path = a.output_dir
+        if not os.path.exists(a.output_dir):
+            os.makedirs(a.output_dir)
+
+
 class Pillcase(object):
 
     def __init__(self, width=None, height=None, url=None):
