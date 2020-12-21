@@ -26,6 +26,8 @@ class Batcher(object):
         if len(self.input_paths) == 0:
             raise Exception("Input_dir contains no image files.")
 
+        self.input_paths.sort()
+
         self.output_path = a.output_dir
         if not os.path.exists(a.output_dir):
             os.makedirs(a.output_dir)
