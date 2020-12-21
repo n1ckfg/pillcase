@@ -11,13 +11,11 @@ def main():
 
         if (pc.width > pc.height):
             img = pc.resize(img, pc.height, pc.height)
-            pc.crop(0, 0, img.width, img.height)
-            pc.image(img, 0, 0)
         elif (pc.height > pc.width):
             img = pc.resize(img, pc.width, pc.width)
-            pc.crop(0, 0, img.width, img.height)
-            pc.image(img, 0, 0)
 
+        pc.crop(0, 0, img.width, img.height)
+        pc.image(img, 0, 0)
 
         #pc.show()
         pc.save(os.path.join(batcher.output_path, "output" + str(i) + ".png"))
